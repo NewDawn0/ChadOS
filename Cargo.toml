@@ -1,3 +1,4 @@
+# Package Info
 [package]
 name = "chad"
 version = "0.1.0"
@@ -7,4 +8,12 @@ license = "MIT"
 keywords = ["OS", "Operating System", "Rust"]
 categories = ["operating systems"]
 
+# Dependencies 
 [dependencies]
+
+# Complier settings
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
