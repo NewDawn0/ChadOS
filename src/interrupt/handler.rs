@@ -2,12 +2,9 @@ use crate::{
     cfg::interrupt::KEYBOARD_PORT,
     eprintln,
     interrupt::pic::{InterruptIndex, PICS},
+    keys::scancode,
     print, util,
 };
-use lazy_static::lazy_static;
-use pc_keyboard::DecodedKey;
-use pc_keyboard::{layouts, HandleControl, Keyboard, ScancodeSet1};
-use spin::Mutex;
 use x86_64::{
     instructions::port::Port,
     registers::control::Cr2,
@@ -44,22 +41,8 @@ pub extern "x86-interrupt" fn page_fault(
     }
 }
 pub extern "x86-interrupt" fn keyboard_interrupt(_stack_frame: InterruptStackFrame) {
-    lazy_static! {
-        static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> = Mutex::new(
-            Keyboard::new(layouts::Us104Key, ScancodeSet1, HandleControl::Ignore)
-        );
-    }
-    let mut keyboard = KEYBOARD.lock();
     let mut port = Port::new(KEYBOARD_PORT);
-    let scancode: u8 = unsafe { port.read() };
-    if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
-        if let Some(key) = keyboard.process_keyevent(key_event) {
-            match key {
-                DecodedKey::Unicode(character) => print!("{}", character),
-                DecodedKey::RawKey(key) => print!("{:?}", key),
-            }
-        }
-    }
+    scancode::add(unsafe { port.read() });
     unsafe {
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
