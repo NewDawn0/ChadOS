@@ -1,0 +1,27 @@
+env_files = ["./build-cfg/make.env"]
+
+[tasks.default]
+alias = "build"
+
+[tasks.clean]
+clear = true
+script = '''
+cargo clean
+rm -rf .build
+'''
+
+[tasks.build]
+clear = true
+dependencies = ["clean"]
+command = "cargo"
+args = ["bootimage", "--release"]
+
+[tasks.test]
+clear = true
+command = "cargo"
+args = ["test"]
+
+[tasks.run]
+clear = true
+command = "cargo"
+args = ["run", "--release"]
