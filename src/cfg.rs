@@ -1,14 +1,6 @@
 /// Config file
 #[cfg(test)]
 use crate::test;
-pub mod global {
-    use crate::io::vga::Colour;
-    pub const DEBUG: bool = true;
-    pub const ERR_PRINT_COLOUR: Colour = Colour::Red;
-    pub const PANIC_COLOUR: Colour = Colour::LightRed;
-    pub const KERNEL_PRINT_COLOUR: Colour = Colour::Green;
-    pub const KPRINTLN_COLOUR: Colour = Colour::Yellow;
-}
 
 pub mod vga {
     use crate::io::vga::Colour;
@@ -17,8 +9,13 @@ pub mod vga {
     pub const NON_PRINTABLE: u8 = 0xfe;
     pub const ASCII_BLANK: u8 = b' ';
     pub const BUF_ADDR: u32 = 0xb8000;
-    pub const FG_COL: Colour = Colour::LightGreen;
+    pub const FG_COL: Colour = Colour::White;
     pub const BG_COL: Colour = Colour::Black;
+    pub const DEBUG_COLOUR: Colour = Colour::Yellow;
+    pub const ERRP_COLOUR: Colour = Colour::Red;
+    pub const ERRM_COLOUR: Colour = Colour::Red;
+    pub const KERNELP_COLOUR: Colour = Colour::Green;
+    pub const KERNELM_COLOUR: Colour = Colour::LightGreen;
 }
 pub mod serial {
     pub const SERIAL1_PORT: u16 = 0x3f8;
@@ -38,7 +35,6 @@ pub mod mem {
 #[test_case]
 fn test_cfg() {
     use crate::io::vga::Colour;
-    test!("CFG global debug", assert_eq!(global::DEBUG, true));
     test!(
         "CFG VGA BUFFER_HEIGHT",
         assert_eq!(vga::BUFFER_HEIGHT, 25 as usize)
