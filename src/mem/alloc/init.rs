@@ -1,4 +1,3 @@
-use spin::{Mutex, MutexGuard};
 use x86_64::{
     structures::paging::{
         mapper::MapToError, FrameAllocator as FrameAlloc, Mapper, Page, PageTableFlags as Flags,
@@ -8,6 +7,8 @@ use x86_64::{
 };
 
 use crate::cfg::mem::{HEAP_SIZE, HEAP_START};
+#[cfg(feature = "alloc-bump")]
+use spin::{Mutex, MutexGuard};
 
 #[cfg(feature = "alloc-bump")]
 use crate::mem::alloc::backend::bump::bump::ALLOC;
@@ -18,9 +19,11 @@ use crate::mem::alloc::backend::galloc::ALLOC;
 #[cfg(feature = "alloc-slab")]
 use crate::mem::alloc::backend::slab::ALLOC;
 
+#[cfg(feature = "alloc-bump")]
 pub struct Locked<T> {
     inner: Mutex<T>,
 }
+#[cfg(feature = "alloc-bump")]
 impl<T> Locked<T> {
     pub const fn new(inner: T) -> Self {
         Self {
@@ -32,6 +35,7 @@ impl<T> Locked<T> {
     }
 }
 
+#[cfg(feature = "alloc-bump")]
 pub fn align_up(addr: usize, align: usize) -> usize {
     (addr + align - 1) & !(align - 1)
 }

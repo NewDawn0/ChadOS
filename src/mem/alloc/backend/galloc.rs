@@ -1,5 +1,4 @@
 use core::alloc::GlobalAlloc;
-
 use good_memory_allocator::SpinLockedAllocator;
 
 #[global_allocator]
