@@ -10,11 +10,36 @@ cargo clean
 rm -rf .build
 '''
 
+[tasks.prebuild]
+clear = true
+private = true
+script = '''
+mkdir .build
+qemu-img create .build/${IMG_NAME} 100M
+'''
+
+
 [tasks.build]
 clear = true
-dependencies = ["clean"]
+dependencies = ["clean", "prebuild", "build-rs", "build-img"]
+command = "mv"
+args = [".build", "${IMG_NAME}"]
+
+[tasks.build-rs]
+clear = true
+private = true
 command = "cargo"
 args = ["bootimage", "--release"]
+
+[tasks.build-img]
+clear = true
+private = true
+command = "dd"
+args = [
+  "conv=notrunc",
+  "if=./target/x86-64/release/bootimage-ChadOS.bin",
+  "of=./.build/${IMG_NAME}",
+]
 
 [tasks.test]
 clear = true
@@ -23,5 +48,6 @@ args = ["test"]
 
 [tasks.run]
 clear = true
-command = "cargo"
-args = ["run", "--release"]
+dependencies = ["build"]
+command = "qemu-system-x86_64"
+args = ["-drive", "format=raw,file=ChadOS.img"]
