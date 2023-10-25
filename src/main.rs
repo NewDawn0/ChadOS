@@ -12,7 +12,9 @@
 mod cfg;
 mod interrupt;
 mod io;
+mod keys;
 mod mem;
+mod sched;
 #[cfg(test)]
 mod testing;
 mod util;
@@ -22,6 +24,8 @@ extern crate alloc;
 use bootloader::{entry_point, BootInfo};
 #[cfg(not(test))]
 use core::panic::PanicInfo;
+use keys::scancode;
+use sched::{Exec, Task};
 
 // Bootloader entrypoint
 entry_point!(kmain);
@@ -32,26 +36,9 @@ fn kmain(boot_info: &'static BootInfo) -> ! {
     #[cfg(test)]
     test_main();
 
-    use alloc::{boxed::Box, rc::Rc, vec, vec::Vec};
-    let heap_value = Box::new(41);
-    println!("heap_value at {:p}", heap_value);
-
-    let mut vec = Vec::new();
-    for i in 0..1000 {
-        vec.push(i);
-    }
-    println!("Vec at {:p}", vec.as_slice());
-
-    let rc = Rc::new(vec![1, 2, 3]);
-    let cr = rc.clone();
-    println!("Current ref count is {}", Rc::strong_count(&cr));
-    core::mem::drop(rc);
-    println!("Current ref count is {}", Rc::strong_count(&cr));
-
-    println!("Hello world{}", '!');
-    unsafe {
-        util::hlt_loop();
-    }
+    let mut exec = Exec::new();
+    exec.spawn(Task::new(scancode::print_keys()));
+    exec.run();
 }
 
 /// This function is called on panic.
