@@ -1,7 +1,8 @@
 use crate::cfg::interrupt::{PIC_1_OFFSET, PIC_2_OFFSET};
 use core::arch::asm;
 use pic8259::ChainedPics;
-use spin::Mutex;
+// use spin::Mutex;
+use once_cell::sync::Lazy;
 
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
@@ -18,12 +19,12 @@ impl InterruptIndex {
     }
 }
 
-pub static PICS: Mutex<ChainedPics> =
-    Mutex::new(unsafe { ChainedPics::new(PIC_1_OFFSET, PIC_2_OFFSET) });
+pub static mut PICS: Lazy<ChainedPics> =
+    Lazy::new(|| unsafe { ChainedPics::new(PIC_1_OFFSET, PIC_2_OFFSET) });
 
 pub fn init() {
     unsafe {
-        PICS.lock().initialize();
+        PICS.initialize();
         asm!("sti");
     };
 }
