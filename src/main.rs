@@ -10,6 +10,7 @@
 
 // Modules
 mod cfg;
+mod fs;
 mod interrupt;
 mod io;
 mod keys;
@@ -17,6 +18,7 @@ mod mem;
 mod sched;
 #[cfg(test)]
 mod testing;
+mod time;
 mod util;
 
 // Imports
@@ -24,8 +26,9 @@ extern crate alloc;
 use bootloader::{entry_point, BootInfo};
 #[cfg(not(test))]
 use core::panic::PanicInfo;
-use keys::scancode;
 use sched::{Exec, Task};
+
+use crate::time::{sleep, Uptime};
 
 // Bootloader entrypoint
 entry_point!(kmain);
@@ -33,11 +36,18 @@ fn kmain(boot_info: &'static BootInfo) -> ! {
     // util::logo();
     util::init(boot_info);
 
+    // Run tests
     #[cfg(test)]
     test_main();
 
+    println!("Uptime: {}", Uptime::string_fmt());
+    sleep(50);
+    println!("Uptime: {}", Uptime::string_fmt());
+    sleep(15);
+    println!("Uptime: {}", Uptime::string_fmt());
+    // Start the async executor
     let mut exec = Exec::new();
-    exec.spawn(Task::new(scancode::print_keys()));
+    // exec.spawn(Task::new(scancode::print_keys()));
     exec.run();
 }
 
