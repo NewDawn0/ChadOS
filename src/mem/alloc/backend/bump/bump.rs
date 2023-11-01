@@ -1,5 +1,7 @@
-use super::block::FixedSizeBlockAlloc;
-use crate::mem::alloc::init::{align_up, Locked};
+use crate::mem::alloc::{
+    backend::bump::block::FixedSizeBlockAlloc,
+    init::{align_up, Locked},
+};
 use alloc::alloc::{GlobalAlloc, Layout};
 use core::ptr;
 
