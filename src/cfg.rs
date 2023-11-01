@@ -31,9 +31,6 @@ pub mod interrupt {
     pub const PIC_1_ADDR: u16 = 0x21;
     pub const PIC_2_ADDR: u16 = 0xA1;
     pub const KEYBOARD_PORT: u16 = 0x60;
-    pub const PIT_CMD_PORT: u16 = 0x43;
-    pub const PIT_ADDR_PORT: u16 = 0x40;
-    pub const PIT_HZ: u32 = 100;
 }
 pub mod mem {
     pub const HEAP_START: usize = 0x444444440000;
@@ -42,14 +39,9 @@ pub mod mem {
     pub const BLOCK_SIZES: &[usize] = &[8, 16, 32, 64, 128, 256, 512, 1024, 2048];
 }
 pub mod time {
-    pub const EPOCH: u16 = 2000;
-    pub const CMOS_ADDR_PORT: u16 = 0x70;
-    pub const CMOS_DATA_PORT: u16 = 0x71;
-    pub const PIT_DIVISOR: f64 = 1193.0 * 1.428751429;
-    pub const PIT_FREQUENCY: f64 = 3579545.0 / 3.0; // See: https://wiki.osdev.org/PIT
-    pub const PIT_INTERVAL: f64 = PIT_DIVISOR / PIT_FREQUENCY; // HACK:constant 1.428751429 fixes the time
-    pub const PIT_FREQ_CMD_PORT: u16 = 0x40;
-    pub const PIT_FREQ_DATA_PORT: u16 = 0x43;
+    pub const PIT_CMD_PORT: u16 = 0x43;
+    pub const PIT_ADDR_PORT: u16 = 0x40;
+    pub const PIT_HZ: u32 = 100;
 }
 pub mod keys {
     use crate::keys::WrappedLayout;
@@ -135,21 +127,13 @@ fn test_cfg() {
         "CFG MEM HEAP_SIZE",
         assert_eq!(mem::HEAP_SIZE, 102400 as usize)
     );
-    test!("CFG TIME EPOCH", assert_eq!(time::EPOCH, 2000));
     test!(
-        "CFG TIME CMOS_ADDR_PORT",
-        assert_eq!(time::CMOS_ADDR_PORT, 0x70 as u16)
+        "CFG TIME PIT_CMD_PORT",
+        assert_eq!(time::PIT_CMD_PORT, 0x43 as u16)
     );
     test!(
-        "CFG TIME CMOS_DATA_PORT",
-        assert_eq!(time::CMOS_DATA_PORT, 0x71 as u16)
+        "CFG TIME PIT_ADDR_PORT",
+        assert_eq!(time::PIT_ADDR_PORT, 0x40 as u16)
     );
-    test!(
-        "CFG TIME PIT_FREQ_CMD_PORT",
-        assert_eq!(time::PIT_FREQ_CMD_PORT, 0x40 as u16)
-    );
-    test!(
-        "CFG TIME PIT_FREQ_DATA_PORT",
-        assert_eq!(time::PIT_FREQ_DATA_PORT, 0x43 as u16)
-    );
+    test!("CFG TIME PIT_HZ", assert_eq!(time::PIT_HZ, 100 as u32));
 }
