@@ -152,7 +152,7 @@ impl Writer {
     }
 
     /// Clears a row by overwriting it with blank characters.
-    fn cr(&mut self, row: usize) {
+    pub fn cr(&mut self, row: usize) {
         let blank = ScreenChar {
             ascii_character: ASCII_BLANK,
             colour_code: COL.lock().get(),
@@ -173,7 +173,11 @@ impl fmt::Write for Writer {
 /// Like the `print!` macro in the standard library, but prints to the VGA text buffer.
 #[macro_export]
 macro_rules! print {
-    ($($arg:tt)*) => ($crate::io::vga::_print(format_args!($($arg)*)));
+    ($($arg:tt)*) => ($crate::io::vga::_print(format_args!($($arg)*), false));
+}
+#[macro_export]
+macro_rules! rprint {
+    ($($arg:tt)*) => ($crate::io::vga::_print(format_args!($($arg)*), true));
 }
 
 /// Like the `println!` macro in the standard library, but prints to the VGA text buffer.
@@ -214,12 +218,16 @@ macro_rules! eprintln {
 /// Prints the given formatted string to the VGA text buffer
 /// through the global `WRITER` instance.
 #[doc(hidden)]
-pub fn _print(args: fmt::Arguments) {
+pub fn _print(args: fmt::Arguments, clear: bool) {
     use core::fmt::Write;
     use x86_64::instructions::interrupts;
-
     interrupts::without_interrupts(|| {
-        WRITER.lock().write_fmt(args).unwrap();
+        let mut writer = WRITER.lock();
+        if clear {
+            writer.cr(BUFFER_HEIGHT - 1);
+            writer.column_position = 0;
+        }
+        writer.write_fmt(args).unwrap();
     });
 }
 
