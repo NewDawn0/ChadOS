@@ -1,3 +1,17 @@
+#     ____ _               _  ___  ____
+#    / ___| |__   __ _  __| |/ _ \/ ___|
+#   | |   | '_ \ / _` |/ _` | | | \___ \
+#   | |___| | | | (_| | (_| | |_| |___) |
+#    \____|_| |_|\__,_|\__,_|\___/|____/
+#    https://github.com/NewDawn0/ChadOS
+# 
+#   @Author: NewDawn0
+#   @Contributors: -
+#   @License: MIT
+#   
+#   File: Cargo.toml
+#   Desc: Cargo config
+
 [package]
 name = "ChadOS"
 version = "0.1.0"
@@ -5,22 +19,24 @@ edition = "2021"
 authors = ["NewDawn0 (Tom)"]
 
 [dependencies]
+bit_field = "0.10.2"
 bootloader = { version = "0.9.8", features = ["map_physical_memory"] }
 conquer-once = { version = "0.4.0", default-features = false }
 const_format = "0.2.32"
 crossbeam-queue = { version = "0.3.8", default-features = false, features = [
   "alloc",
 ] }
-dlmalloc = { version = "0.2.4", optional = true }
 futures-util = { version = "0.3.28", default-features = false, features = [
   "alloc",
 ] }
 good_memory_allocator = { version = "0.1.7", optional = true }
 lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
 linked_list_allocator = { version = "0.10.5", optional = true }
-pc-keyboard = "0.5.1"
+once_cell = { version = "1.18.0", default-features = false, features = [
+  "critical-section",
+] }
+pc-keyboard = "0.7.0"
 pic8259 = "0.10.4"
-slab_allocator_rs = { version = "1.0.2", optional = true }
 spin = "0.9.8"
 uart_16550 = "0.3.0"
 volatile = "0.2.6"
@@ -40,6 +56,4 @@ test-args = [
 [features]
 default = ["alloc-galloc"]
 alloc-bump = ["linked_list_allocator"]
-alloc-dlmalloc = ["dlmalloc"]
 alloc-galloc = ["good_memory_allocator"]
-alloc-slab = ["slab_allocator_rs"]
