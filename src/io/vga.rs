@@ -268,7 +268,7 @@ fn test_vga() {
 #[test_case]
 fn test_print() {
     test!(
-        "Testing print",
+        "Testing print!()",
         assert_eq!(
             {
                 crate::print!("Hello world");
@@ -277,7 +277,7 @@ fn test_print() {
         )
     );
     test!(
-        "Testing println",
+        "Testing println!()",
         assert_eq!(
             {
                 crate::println!("Hello world ln");
@@ -286,7 +286,7 @@ fn test_print() {
         )
     );
     test!(
-        "Testing kprintln",
+        "Testing kprintln!()",
         assert_eq!(
             {
                 crate::kprintln!("Kernel msg");
@@ -295,7 +295,7 @@ fn test_print() {
         )
     );
     test!(
-        "Testing wprintln",
+        "Testing wprintln!()",
         assert_eq!(
             {
                 crate::wprintln!("Warn msg");
@@ -304,7 +304,7 @@ fn test_print() {
         )
     );
     test!(
-        "Testing eprintln",
+        "Testing eprintln!()",
         assert_eq!(
             {
                 crate::eprintln!("Err msg");
