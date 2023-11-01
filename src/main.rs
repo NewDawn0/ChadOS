@@ -39,12 +39,10 @@ fn kmain(boot_info: &'static BootInfo) -> ! {
     // Run tests
     #[cfg(test)]
     test_main();
-
-    println!("Uptime: {}", Uptime::string_fmt());
-    sleep(50);
-    println!("Uptime: {}", Uptime::string_fmt());
-    sleep(15);
-    println!("Uptime: {}", Uptime::string_fmt());
+    loop {
+        rprint!("Uptime: {}", Uptime::string_fmt());
+        sleep(1);
+    }
     // Start the async executor
     let mut exec = Exec::new();
     // exec.spawn(Task::new(scancode::print_keys()));
