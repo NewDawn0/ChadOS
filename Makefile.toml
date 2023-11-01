@@ -1,19 +1,21 @@
 env_files = ["./build-cfg/make.env"]
 
 [tasks.default]
-alias = "build"
+alias = "help"
 
 [tasks.clean]
 clear = true
+script_runner = "@shell"
 script = '''
 cargo clean
-rm -rf .build
 '''
 
-[tasks.prebuild]
+[tasks.pre-build]
 clear = true
 private = true
+script_runner = "@shell"
 script = '''
+rm -rf .build ${IMG_NAME}
 mkdir .build
 qemu-img create .build/${IMG_NAME} 100M
 '''
@@ -21,15 +23,15 @@ qemu-img create .build/${IMG_NAME} 100M
 
 [tasks.build]
 clear = true
-dependencies = ["clean", "prebuild", "build-rs", "build-img"]
+dependencies = ["pre-build", "build-rs", "post-build", "build-img"]
 command = "mv"
-args = [".build", "${IMG_NAME}"]
+args = [".build/${IMG_NAME}", "${IMG_NAME}"]
 
 [tasks.build-rs]
 clear = true
 private = true
 command = "cargo"
-args = ["bootimage", "--release"]
+args = ["bootimage", "--release", "--config", ".cargo/config.toml"]
 
 [tasks.build-img]
 clear = true
@@ -41,10 +43,32 @@ args = [
   "of=./.build/${IMG_NAME}",
 ]
 
+[tasks.post-build]
+clear = true
+private = true
+script_runner = "@shell"
+script = '''
+strip ./target/x86-64/release/bootimage-ChadOS.bin
+'''
+
 [tasks.test]
 clear = true
 command = "cargo"
 args = ["test"]
+
+[tasks.help]
+clear = true
+script_runner = "@shell"
+script = '''
+echo 'USAGE:'
+echo '  cargo make <task>'
+echo
+echo 'Available tasks'
+echo '  run      Runs the OS in qemu'
+echo '  help     Prints this menu'
+echo '  test     Runs the test suite'
+echo '  build    Builds the OS to a disk image'
+'''
 
 [tasks.run]
 clear = true
