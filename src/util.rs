@@ -1,4 +1,4 @@
-use crate::kprintln;
+use crate::{interrupt::handler::set_irq_handler, kprintln};
 use bootloader::BootInfo;
 use const_format::str_replace;
 use core::arch::asm;
@@ -21,14 +21,19 @@ macro_rules! kinit {
     }
 }
 
+fn none() {}
 pub fn init(boot_info: &'static BootInfo) {
-    kprintln!("Beginning initalization");
+    kprintln!("Beginning initialization");
+    kprintln!("Setting temporary time handler fn(s)");
+    set_irq_handler(0, none);
     kinit!(interrupt::gdt);
     kinit!(interrupt::idt);
     kinit!(interrupt::pic);
+    kinit!(time);
+    kinit!(keys);
     let (mut mapper, mut frame_alloc) = kinit!(mem::mem, boot_info);
     kinit!(mem::alloc::init, &mut mapper, &mut frame_alloc).expect("Heap init failed");
-    kprintln!("Kernel fully initalized");
+    kprintln!("Kernel fully initialized");
 }
 
 /* Alt Logo
