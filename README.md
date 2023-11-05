@@ -1,4 +1,11 @@
-# ChadOS
+```
+  ____ _               _  ___  ____
+ / ___| |__   __ _  __| |/ _ \/ ___|
+| |   | '_ \ / _` |/ _` | | | \___ \
+| |___| | | | (_| | (_| | |_| |___) |
+ \____|_| |_|\__,_|\__,_|\___/|____/
+  https://github.com/NewDawn0/ChadOS
+```
 
 Welcome to ChadOS, an experimental operating system created as part of an
 A-level thesis project. This operating system was developed to explore the
