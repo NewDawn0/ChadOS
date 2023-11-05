@@ -1,9 +1,10 @@
 use alloc::{boxed::Box, collections::BTreeMap, sync::Arc, task::Wake};
+#[cfg(feature = "unused-task")]
+use core::sync::atomic::{AtomicU64, Ordering};
 use core::{
     arch::asm,
     future::Future,
     pin::Pin,
-    sync::atomic::{AtomicU64, Ordering},
     task::{Context as Cx, Poll, Waker},
 };
 use crossbeam_queue::ArrayQueue;
@@ -14,13 +15,14 @@ pub struct Exec {
     cache: BTreeMap<TaskId, Waker>,
 }
 pub struct Task {
-    id: TaskId,
+    _id: TaskId,
     future: Pin<Box<dyn Future<Output = ()>>>,
 }
 impl Task {
+    #[cfg(feature = "unused-task")]
     pub fn new(future: impl Future<Output = ()> + 'static) -> Self {
         Self {
-            id: TaskId::new(),
+            _id: TaskId::new(),
             future: Box::pin(future),
         }
     }
@@ -33,6 +35,7 @@ struct TaskWaker {
     queue: Arc<ArrayQueue<TaskId>>,
 }
 impl TaskWaker {
+    #[allow(clippy::new_ret_no_self)]
     fn new(id: TaskId, queue: Arc<ArrayQueue<TaskId>>) -> Waker {
         Waker::from(Arc::new(Self { id, queue }))
     }
@@ -51,6 +54,7 @@ impl Wake for TaskWaker {
 
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Clone, Copy)]
 struct TaskId(u64);
+#[cfg(feature = "unused-task")]
 impl TaskId {
     fn new() -> Self {
         static NEXT: AtomicU64 = AtomicU64::new(0);
@@ -66,6 +70,7 @@ impl Exec {
             cache: BTreeMap::new(),
         }
     }
+    #[cfg(feature = "unused-task")]
     pub fn spawn(&mut self, task: Task) {
         let id = task.id;
         match self.tasks.insert(task.id, task) {
