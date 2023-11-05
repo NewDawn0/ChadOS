@@ -1,2 +1,2 @@
 pub mod alloc;
-pub mod mem;
+pub mod paging;
