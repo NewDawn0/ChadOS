@@ -20,6 +20,7 @@ authors = ["NewDawn0 (Tom)"]
 
 [dependencies]
 bit_field = "0.10.2"
+bitflags = "2.4.1"
 bootloader = { version = "0.9.8", features = ["map_physical_memory"] }
 conquer-once = { version = "0.4.0", default-features = false }
 const_format = "0.2.32"
@@ -30,6 +31,7 @@ futures-util = { version = "0.3.28", default-features = false, features = [
   "alloc",
 ] }
 good_memory_allocator = { version = "0.1.7", optional = true }
+hashbrown = "0.14.2"
 lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
 linked_list_allocator = { version = "0.10.5", optional = true }
 once_cell = { version = "1.18.0", default-features = false, features = [
@@ -57,3 +59,4 @@ test-args = [
 default = ["alloc-galloc"]
 alloc-bump = ["linked_list_allocator"]
 alloc-galloc = ["good_memory_allocator"]
+unused-task = []
