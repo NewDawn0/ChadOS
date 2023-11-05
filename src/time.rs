@@ -36,6 +36,9 @@ impl Uptime {
     pub fn secs() -> usize {
         UPTIME_SECS.load(Ordering::Relaxed)
     }
+    pub fn ticks() -> usize {
+        UPTIME_TICKS.load(Ordering::Relaxed)
+    }
     pub fn fmt() -> UptimeRepr {
         let secs = UPTIME_SECS.load(Ordering::Relaxed);
         let years = secs / (365 * 24 * 60 * 60);
@@ -82,7 +85,6 @@ impl Uptime {
             fmt.push_str(&format!("{}h ", uptime.hours))
         }
         if uptime.mins > 0 || biggest > 2 {
-            biggest = 2;
             fmt.push_str(&format!("{}m ", uptime.mins))
         }
         fmt.push_str(&format!("{}s", uptime.secs));
