@@ -9,8 +9,9 @@
 #![feature(const_mut_refs)]
 
 // Modules
-mod cfg;
-mod fs;
+pub mod api;
+pub mod cfg;
+mod console;
 mod interrupt;
 mod io;
 mod keys;
@@ -19,30 +20,30 @@ mod sched;
 #[cfg(test)]
 mod testing;
 mod time;
+mod usr_bin;
 mod util;
 
 // Imports
 extern crate alloc;
 use bootloader::{entry_point, BootInfo};
+use cfg::console::CMD_OK_COL;
 #[cfg(not(test))]
 use core::panic::PanicInfo;
-use sched::{Exec, Task};
-
-use crate::time::{sleep, Uptime};
+use io::vga::COL;
+use sched::Exec;
 
 // Bootloader entrypoint
 entry_point!(kmain);
 fn kmain(boot_info: &'static BootInfo) -> ! {
     // util::logo();
     util::init(boot_info);
+    COL.lock().set_fg(CMD_OK_COL);
+    print!("> "); // print console init
+    COL.lock().set_default();
 
     // Run tests
     #[cfg(test)]
     test_main();
-    loop {
-        rprint!("Uptime: {}", Uptime::string_fmt());
-        sleep(1);
-    }
     // Start the async executor
     let mut exec = Exec::new();
     // exec.spawn(Task::new(scancode::print_keys()));
