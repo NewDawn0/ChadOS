@@ -15,8 +15,8 @@ pub mod vga {
     pub const WARN_COLOUR: Colour = Colour::Yellow;
     pub const ERRP_COLOUR: Colour = Colour::Red;
     pub const ERRM_COLOUR: Colour = Colour::LightRed;
-    pub const KERNELP_COLOUR: Colour = Colour::Green;
-    pub const KERNELM_COLOUR: Colour = Colour::LightGreen;
+    pub const KERNELP_COLOUR: Colour = Colour::LightBlue;
+    pub const KERNELM_COLOUR: Colour = Colour::Cyan;
 }
 pub mod serial {
     pub const SERIAL1_PORT: u16 = 0x3f8;
@@ -57,8 +57,12 @@ pub mod keys {
     //   - Dvorak  : Dvorak 104 Key
     pub const LAYOUT: WrappedLayout = WrappedLayout::Us;
 }
-pub mod fs {
-    pub const BLOCK_SIZE: usize = 512;
+pub mod console {
+    use crate::io::vga::Colour;
+    pub const CMD_SEPERATOR: char = '!';
+    pub const CMD_OK_COL: Colour = Colour::LightGreen;
+    pub const CMD_ERR_COL: Colour = Colour::LightRed;
+    pub const CMD_OUT_COL: Colour = Colour::Pink;
 }
 // Tests
 #[test_case]
