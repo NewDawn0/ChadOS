@@ -3,21 +3,18 @@ use crate::test;
 use crate::{
     cfg::{interrupt::KEYBOARD_PORT, keys::LAYOUT},
     interrupt::handler::set_irq_handler,
+    io::vga::clear_char,
     print,
 };
-use core::sync::atomic::{AtomicBool, Ordering};
+use lazy_static::lazy_static;
 use pc_keyboard::{
     layouts, DecodedKey, Error, HandleControl::MapLettersToUnicode, KeyCode as KC, KeyEvent,
-    KeyState as KS, Keyboard, ScancodeSet1,
+    Keyboard, ScancodeSet1,
 };
-use spin::Mutex;
+use spin::{Mutex, RwLock};
 use x86_64::instructions::port::Port;
 
 static KEYBOARD: Mutex<Layout> = Mutex::new(Layout::new(LAYOUT));
-pub static ALT: AtomicBool = AtomicBool::new(false);
-pub static CTRL: AtomicBool = AtomicBool::new(false);
-pub static SHIFT: AtomicBool = AtomicBool::new(false);
-pub static META: AtomicBool = AtomicBool::new(false);
 
 macro_rules! layout {
     ($layout:ident) => {
@@ -90,48 +87,88 @@ impl Layout {
 pub fn init() {
     set_irq_handler(1, key_handler)
 }
-
 fn read_scancode() -> u8 {
     unsafe { Port::new(KEYBOARD_PORT).read() }
 }
 
-fn send_key(c: char) {
-    print!("{}", c);
+#[repr(packed)]
+pub struct Modifiers {
+    // Standard
+    pub shift: bool, // byte 1
+    pub alt: bool,   // byte 2
+    pub ctrl: bool,  // byte 3
+    pub meta: bool,  // byte 4
+    // Non-Standard: to fill the 8-bits
+    pub clear: bool, // byte 5
+    pub tab: bool,   // byte 6
+    pub enter: bool, // byte 7
+    pub caps: bool,  // byte 8
+}
+impl Modifiers {
+    pub const fn new() -> Self {
+        Self {
+            // Standard
+            shift: false, // byte 1
+            alt: false,   // byte 2
+            ctrl: false,  // byte 3
+            meta: false,  // byte 4
+            // Non-Standard: to fill the 8-bits
+            clear: false, // byte 5
+            tab: false,   // byte 6
+            enter: false, // byte 7
+            caps: false,  // byte 8
+        }
+    }
 }
 
-fn send_csi(code: &str) {
-    send_key('\x1B'); // ESC
-    send_key('[');
-    for c in code.chars() {
-        send_key(c);
+fn default_key_handler(c: char, mods: Modifiers) {
+    if mods.clear {
+        clear_char();
+    } else if mods.caps || mods.shift {
+        print!("{}", c.to_uppercase());
+    } else {
+        print!("{}", c)
     }
+}
+lazy_static! {
+    pub static ref KEY_HANDLER: RwLock<fn(c: char, mods: Modifiers)> =
+        RwLock::new(default_key_handler);
 }
 
 fn key_handler() {
     let mut keyboard = KEYBOARD.lock();
     let code = read_scancode();
     if let Ok(Some(event)) = keyboard.add_byte(code) {
-        let ord = Ordering::Relaxed;
+        let mut flags = Modifiers::new();
         match event.code {
-            KC::LAlt | KC::RAlt2 => ALT.store(event.state == KS::Down, ord),
-            KC::LShift | KC::RShift => SHIFT.store(event.state == KS::Down, ord),
-            KC::LControl | KC::RControl | KC::RControl2 => CTRL.store(event.state == KS::Down, ord),
-            KC::LWin | KC::RWin => META.store(event.state == KS::Down, ord),
+            KC::LAlt | KC::RAlt2 => {
+                flags.alt = true;
+            }
+            KC::LShift | KC::RShift => {
+                flags.shift = true;
+            }
+            KC::LControl | KC::RControl | KC::RControl2 => {
+                flags.ctrl = true;
+            }
+            KC::LWin | KC::RWin => {
+                flags.meta = true;
+            }
+            KC::Return => {
+                flags.enter = true;
+            }
             _ => {}
         }
-        let is_alt = ALT.load(ord);
-        let is_ctrl = CTRL.load(ord);
-        let is_shift = SHIFT.load(ord);
         if let Some(key) = keyboard.process_keyevent(event) {
             match key {
-                DecodedKey::RawKey(KC::PageUp) => send_csi("5~"),
-                DecodedKey::RawKey(KC::PageDown) => send_csi("6~"),
-                DecodedKey::RawKey(KC::ArrowUp) => send_csi("A"),
-                DecodedKey::RawKey(KC::ArrowDown) => send_csi("B"),
-                DecodedKey::RawKey(KC::ArrowRight) => send_csi("C"),
-                DecodedKey::RawKey(KC::ArrowLeft) => send_csi("D"),
-                DecodedKey::Unicode('\t') if is_shift => send_csi("Z"), // Convert Shift-Tab into Backtab
-                DecodedKey::Unicode(c) => send_key(c),
+                DecodedKey::Unicode('\u{8}') => {
+                    flags.clear = true;
+                    KEY_HANDLER.read()('\0', flags);
+                }
+                DecodedKey::Unicode('\t') => {
+                    flags.tab = true;
+                    KEY_HANDLER.read()('\0', flags);
+                }
+                DecodedKey::Unicode(c) => KEY_HANDLER.read()(c, flags),
                 _ => {}
             };
         }
