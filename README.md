@@ -89,7 +89,7 @@ cargo make build
 You can run tests for ChadOS by executing the following command:
 
 ```bash
-cargo make check
+cargo make test
 ```
 
 ## Running it in Qemu
