@@ -38,7 +38,7 @@ use crate::{
         asm::asm,
         io::println,
         scripting::{parse, register, CmdArgs, CmdRes, FUNCS},
-        time::Uptime,
+        time::{self, Uptime},
     },
     io::vga::clear_all,
 };
@@ -53,6 +53,7 @@ pub fn init() {
     register!(funcs, clear);
     register!(funcs, sum);
     register!(funcs, asm_test);
+    register!(funcs, sleep);
 }
 
 // @NOTE: A user function needs to have the function signature fn(CmdArgs) -> CmdRes otherwise it will not register
@@ -142,6 +143,7 @@ fn clear(args: CmdArgs) -> CmdRes {
         return Err("Clear takes no arguments".to_string());
     }
     clear_all(); //HACK: NOT AN API SHOULD NOT BE USED OUTSIDE OF THIS FUNCION
+    clear_all(); //HACK: Does not clear all if not called twice idk why?
     Ok(None)
 }
 
@@ -158,7 +160,7 @@ fn clear(args: CmdArgs) -> CmdRes {
 /// Returns `Ok(Some(String))` containing the sum as a string.
 fn sum(args: CmdArgs) -> CmdRes {
     if args.len() < 2 {
-        return Err("Usage: add <i32> <i32> ...".to_string());
+        return Err("Usage: sum <i32> <i32> ...".to_string());
     }
     let mut res = 0;
     for arg in args {
@@ -196,4 +198,23 @@ fn asm_test(_: CmdArgs) -> CmdRes {
         );
     }
     Ok(Some(a.to_string()))
+}
+
+/// Example function: sleep
+///
+/// This function is an example of using assembly to summ all the numbers from 0 to 10
+///
+/// # Arguments
+///
+/// - `args`: A slice of integers to be summed.
+///
+/// # Return
+///
+/// Returns `Ok(Some(String))`.
+fn sleep(args: CmdArgs) -> CmdRes {
+    if args.len() != 1 {
+        return Err("Usage: sleep<usize> ...".to_string());
+    }
+    time::sleep(parse!(args[0], usize)?);
+    Ok(None)
 }
