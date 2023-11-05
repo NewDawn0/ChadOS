@@ -31,8 +31,9 @@ pub fn init(boot_info: &'static BootInfo) {
     kinit!(interrupt::pic);
     kinit!(time);
     kinit!(keys);
-    let (mut mapper, mut frame_alloc) = kinit!(mem::mem, boot_info);
+    let (mut mapper, mut frame_alloc) = kinit!(mem::paging, boot_info);
     kinit!(mem::alloc::init, &mut mapper, &mut frame_alloc).expect("Heap init failed");
+    kinit!(console);
     kprintln!("Kernel fully initialized");
 }
 
