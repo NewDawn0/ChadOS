@@ -80,8 +80,22 @@ impl ColourCode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 struct ScreenChar {
-    ascii_character: u8,
+    ascii_char: u8,
     colour_code: ColourCode,
+}
+impl ScreenChar {
+    pub const fn new(ascii_char: u8, colour_code: ColourCode) -> Self {
+        Self {
+            ascii_char,
+            colour_code,
+        }
+    }
+    pub fn blank() -> Self {
+        Self {
+            ascii_char: ASCII_BLANK,
+            colour_code: COL.lock().get(),
+        }
+    }
 }
 
 /// A structure representing the VGA text buffer.
@@ -105,6 +119,7 @@ impl Writer {
     /// Wraps lines at `BUFFER_WIDTH`. Supports the `\n` newline character.
     pub fn wb(&mut self, byte: u8) {
         match byte {
+            b'\0' => {} // Ignore
             b'\n' => self.nl(),
             byte => {
                 if self.column_position >= BUFFER_WIDTH {
@@ -114,10 +129,7 @@ impl Writer {
                 let row = BUFFER_HEIGHT - 1;
                 let col = self.column_position;
 
-                self.buffer.chars[row][col].write(ScreenChar {
-                    ascii_character: byte,
-                    colour_code: COL.lock().get(),
-                });
+                self.buffer.chars[row][col].write(ScreenChar::new(byte, COL.lock().get()));
                 self.column_position += 1;
             }
         }
@@ -153,13 +165,18 @@ impl Writer {
 
     /// Clears a row by overwriting it with blank characters.
     pub fn cr(&mut self, row: usize) {
-        let blank = ScreenChar {
-            ascii_character: ASCII_BLANK,
-            colour_code: COL.lock().get(),
-        };
         for col in 0..BUFFER_WIDTH {
-            self.buffer.chars[row][col].write(blank);
+            self.buffer.chars[row][col].write(ScreenChar::blank());
         }
+    }
+    pub fn cc(&mut self) {
+        let col = match self.column_position {
+            0..=2 => self.column_position,
+            3..=usize::MAX => self.column_position - 1,
+            _ => 1, // Impossible, but to make the compiler happy...
+        };
+        self.column_position = col;
+        self.buffer.chars[BUFFER_HEIGHT - 1][col].write(ScreenChar::blank())
     }
 }
 
@@ -213,6 +230,26 @@ macro_rules! eprintln {
         $crate::println!(" {}", format_args!($($arg)*));
         $crate::io::vga::COL.lock().set_default();
     };
+}
+
+#[doc(hidden)]
+pub fn clear_char() {
+    use x86_64::instructions::interrupts;
+    interrupts::without_interrupts(|| {
+        WRITER.lock().cc();
+    })
+}
+#[doc(hidden)]
+pub fn clear_all() {
+    use x86_64::instructions::interrupts;
+    interrupts::without_interrupts(|| {
+        let mut writer = WRITER.lock();
+        for row in 1..BUFFER_HEIGHT {
+            writer.cr(row);
+        }
+        writer.cr(BUFFER_HEIGHT - 1);
+        writer.column_position = 0;
+    })
 }
 
 /// Prints the given formatted string to the VGA text buffer
