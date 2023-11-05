@@ -35,6 +35,7 @@
 // Imports
 use crate::{
     api::{
+        asm::asm,
         io::println,
         scripting::{parse, register, CmdArgs, CmdRes, FUNCS},
         time::Uptime,
@@ -51,6 +52,7 @@ pub fn init() {
     register!(funcs, uptime);
     register!(funcs, clear);
     register!(funcs, sum);
+    register!(funcs, asm_test);
 }
 
 // @NOTE: A user function needs to have the function signature fn(CmdArgs) -> CmdRes otherwise it will not register
@@ -163,4 +165,35 @@ fn sum(args: CmdArgs) -> CmdRes {
         res += parse!(arg, i32)?;
     }
     Ok(Some(res.to_string()))
+}
+
+/// Example function: asm_test
+///
+/// This function is an example of using assembly to summ all the numbers from 0 to 10
+///
+/// # Arguments
+///
+/// - `args`: A slice of integers to be summed.
+///
+/// # Return
+///
+/// Returns `Ok(Some(String))`.
+fn asm_test(_: CmdArgs) -> CmdRes {
+    let mut a: i32;
+    unsafe {
+        asm!(
+            "mov {0:r}, 0",                 // Set a to 0
+            "mov rcx, 0",                   // Set rcx to 0
+            "2:",                           // Loop label
+            "inc rcx",                      // Increment rcx
+            "add {0:r}, rcx",               // Increment a by rcx
+            "cmp rcx, 9",                   // Check if rcx is 9 or bigger
+            "jle 2b",                       // Goto Loop if rcx <= 9
+            "jmp 2f",                       // Goto exit if rcx is > 9
+            "2:",                           // Exit label
+            out(reg) a,                     // Store result in a
+            options(pure, nomem, nostack)   // Options
+        );
+    }
+    Ok(Some(a.to_string()))
 }
