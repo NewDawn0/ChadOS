@@ -1,0 +1,163 @@
+28.01.2023
+- Initial Bootable OS Attempt
+- Set up the basic structure for a bootable OS. Focused on the written part and the practical implementation.
+- For next time: Start working on Text I/O implementation.
+- Hardships encountered: Aligning the practical part with the written documentation.
+
+10.02.2023
+- Text I/O Struggles
+- Encountered issues with Text I/O. Had to refactor the code for better integration.
+- For next time: Begin memory management development.
+- Hardships encountered: Refactoring took longer than expected due to unforeseen coding complications.
+
+18.02.2023
+- Memory Management Planning
+- Drafted a plan for memory management, considering various allocators.
+- For next time: Rewrite memory management if the current setup doesn't integrate well.
+- Hardships encountered: Difficulty in choosing the most efficient allocator suitable for the OS needs.
+
+27.02.2023
+- Rewrite Nr. 1
+- Realized the initial setup wouldn't scale well. Started the first rewrite to address this.
+- For next time: Continue refining the rewrite and document changes.
+- Hardships encountered: Rewriting is more challenging than anticipated; it feels like taking one step back to make two steps forward.
+
+07.03.2023
+- Continued Rewrite Nr. 1
+- Focused on improving Text I/O within the context of the new system structure.
+- For next time: Tackle exception handling, which is crucial for system stability.
+- Hardships encountered: Maintaining motivation during the rewriting process can be challenging.
+
+14.03.2023
+- Exception Handling Initiation
+- Began implementing exception handling mechanisms to catch system errors effectively.
+- For next time: Ensure that the scheduling module is initiated.
+- Hardships encountered: Debugging exceptions is time-consuming and often a process of trial and error.
+
+23.03.2023
+- Scheduling Module Blueprint
+- Drafted the initial plans for the scheduling system, considering various strategies.
+- For next time: Start the practical implementation of the scheduler.
+- Hardships encountered: Balancing the time between planning and execution is becoming increasingly difficult.
+
+01.04.2023
+- Scheduler Implementation
+- Commenced coding the scheduling system, focusing on the written part to clarify the approach.
+- For next time: Test the scheduler and prepare for the second rewrite.
+- Hardships encountered: Encountered several bugs that caused unexpected system behaviors.
+
+12.04.2023
+- Preparing for Rewrite Nr. 2
+- Reviewed the system for the upcoming rewrite, ensuring that integration points are well documented.
+- For next time: Execute Rewrite Nr. 2 with the aim to refine memory management.
+- Hardships encountered: Anticipation of the rewrite brings a mix of dread and excitement.
+
+24.04.2023
+- Rewrite Nr. 2 Commenced
+- The rewrite has begun, with a particular focus on a cleaner memory management module.
+- For next time: Continue the rewrite and aim for a stable exception handling feature.
+- Hardships encountered: The complexity of rewriting while maintaining other system parts functional is overwhelming.
+
+05.05.2023
+- Struggling with Exception Handling
+- Worked on exception handling during the rewrite but hit a few roadblocks.
+- For next time: Look for solutions to the exception handling issues and proceed with the rewrite.
+- Hardships encountered: Starting to feel the weight of the project; it's a juggling act between new features and stability.
+
+19.07.2023
+- Resuming Development
+- Picked up where we left off with exception handling refinements.
+- For next time: Fix the editor ASAP and get back on track with the rewrite.
+- Hardships encountered: Re-familiarizing with the project's complexity after a break was challenging.
+
+28.07.2023
+- Overcoming Editor Issues
+- Managed to resolve the text editor problems and made some progress with the rewrite.
+- For next time: Push forward with exception handling and start combining rewrites.
+- Hardships encountered: Technical issues with tools can be as challenging as the coding itself.
+
+08.08.2023
+- Pre-Merge Assessments
+- Started evaluating the best features from each rewrite to prepare for the combination.
+- For next time: Begin the challenging process of merging rewrites 1 and 2.
+- Hardships encountered: Deciding which features to keep and which to discard is harder than expected.
+
+22.08.2023
+- Combining Rewrites 1 and 2
+- Merged the stable features from the two rewrites. Chose the bootloader crate from rewrite 1 for reliability.
+- For next time: Address the merge conflicts and test the combined system.
+- Hardships encountered: Merge conflicts are abundant and resolving them is like solving a complex puzzle.
+
+05.09.2023
+- Merge Conflict Resolution
+- Spent the week resolving conflicts between rewrites. Exception handling from rewrite 2 was integrated.
+- For next time: Ensure the memory management from rewrite 3 is ready to be integrated.
+- Hardships encountered: Some parts of the code had to be rewritten from scratch to fit the new structure.
+
+17.09.2023
+- Preparing Rewrite Nr. 3
+- Set up the groundwork for the third rewrite, aiming for a simpler memory management system.
+- For next time: Implement the new memory management approach effectively.
+- Hardships encountered: Balancing the scope and depth of the rewrite with the existing codebase is tricky.
+
+03.10.2023
+- Memory Management Implementation
+- Implemented the new memory management system. Decided on gmalloc due to its efficiency.
+- For next time: Start testing the new system extensively to iron out any kinks.
+- Hardships encountered: Doubts about the chosen allocator's performance in various scenarios linger.
+
+19.10.2023
+- System Testing and Refinement
+- Began rigorous testing of the new memory management system. Adjusted the bump allocator as a fallback.
+- Started drafting the initial chapters of my thesis, focusing on the conceptual design of the OS.
+- For next time: Finalize the keyboard input refinement and begin the thesis chapter on system architecture.
+- Hardships encountered: Testing revealed more bugs than expected, leading to an extended debugging session.
+
+20.10.2023
+- Keyboard Input Overhaul
+- Refined the keyboard input to support 8 layouts. Manual overrides were set for non-responsive keys.
+- Thesis work: Outlined the chapter on memory management, detailing the rationale behind gmalloc selection.
+- For next time: Start the development of CheapShell and consider its implications on Text I/O.
+- Hardships encountered: Hardware compatibility issues presented a real challenge with the keyboard layouts.
+
+23.10.2023
+- Starting CheapShell Development
+- Initiated the development phase for CheapShell, laying the groundwork for user-defined programs.
+- Continued thesis writing, focusing on the intricacies of the keyboard input overhaul.
+- For next time: Implement the basic command parsing for CheapShell and advance the thesis with a chapter on user interaction.
+- Hardships encountered: Designing a shell that is both powerful and easy to use for end-users is challenging.
+
+25.10.2023
+- Command Parsing in CheapShell
+- Developed the command parsing mechanism for CheapShell, allowing for basic user input handling.
+- Thesis progress: Began the chapter on the CheapShell's design and user command handling.
+- For next time: Work on integrating POSIX-like pipes into the shell and elaborate on shell design principles in the thesis.
+- Hardships encountered: Ensuring that the parsing mechanism could handle a variety of user inputs was intricate work.
+
+29.10.2023
+- Time Management Features
+- Implemented time-related functionalities in the OS: a sleep function and an uptime counter.
+- Thesis progress: Documented the implementation of time management features, considering their importance for OS tasks scheduling.
+- For next time: Refine the time management code and incorporate the details into the ongoing thesis chapters.
+- Hardships encountered: Aligning the sleep function with the existing system processes required careful calibration.
+
+01.11.2023
+- Introducing Pipes to CheapShell
+- Implemented a feature for chaining commands using POSIX-like pipes in CheapShell.
+- Thesis writing: Detailed the significance of inter-process communication in the thesis, using pipes as a case study.
+- For next time: Create an API to aid users in developing their programs within the shell environment and draft the corresponding thesis section.
+- Hardships encountered: Making the pipe feature reliable across different command structures required meticulous attention to detail.
+
+04.11.2023
+- RustDoc Discovery
+- Learned about RustDoc and its capabilities; planned to document the entire codebase using it.
+- Thesis update: Compiled information on RustDoc to include a section on code documentation practices in the thesis.
+- For next time: Begin the extensive task of documenting the codebase with RustDoc and draft the thesis conclusion.
+- Hardships encountered: The realization that the existing documentation is insufficient for a good developer experience.
+
+05.11.2023
+- Documenting with RustDoc
+- Undertook the massive effort of documenting the entire codebase using RustDoc, enhancing user accessibility to beautifully formatted documentation.
+- Thesis conclusion: Finalized the writing of my thesis, encapsulating the developmental journey and the significance of documentation.
+- For next time: Verify that the documentation covers all aspects of the code and is clear to users, and submit the thesis.
+- Hardships encountered: The sheer volume of the codebase made this a daunting task, but the benefits for end-user documentation were clear.
