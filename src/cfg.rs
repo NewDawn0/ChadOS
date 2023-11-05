@@ -64,13 +64,13 @@ pub mod vga {
     /// The warning message color.
     pub const WARN_COLOUR: Colour = Colour::Yellow;
 
-    /// The color of [ERROR] in the error message.
+    /// The color of \[ERROR\] in the error message.
     pub const ERRP_COLOUR: Colour = Colour::Red;
 
     /// The color of the message in the error message.
     pub const ERRM_COLOUR: Colour = Colour::LightRed;
 
-    /// The color of [KERNEL] in the kernel message.
+    /// The color of \[KERNEL\] in the kernel message.
     pub const KERNELP_COLOUR: Colour = Colour::LightBlue;
 
     /// The color of message in the kernel message.

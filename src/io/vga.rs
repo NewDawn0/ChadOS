@@ -70,7 +70,7 @@ macro_rules! println {
 
 /// Prints a formatted message to the VGA buffer with the kernel label.
 ///
-/// This macro is similar to `println!` but prepends a "[KERNEL]" label to the output.
+/// This macro is similar to `println!` but prepends a "\[KERNEL\]" label to the output.
 #[macro_export]
 macro_rules! kprintln {
     ($($arg:tt)*) => {
@@ -84,7 +84,7 @@ macro_rules! kprintln {
 
 /// Prints a warning message to the VGA buffer.
 ///
-/// This macro is similar to `println!` but prepends a "[WARN]" label to the output.
+/// This macro is similar to `println!` but prepends a "\[WARN\]" label to the output.
 #[macro_export]
 macro_rules! wprintln {
     ($($arg:tt)*) => {
@@ -96,7 +96,7 @@ macro_rules! wprintln {
 
 /// Prints an error message to the VGA buffer.
 ///
-/// This macro is similar to `println!` but prepends an "[ERROR]" label to the output.
+/// This macro is similar to `println!` but prepends an "\[ERROR\]" label to the output.
 #[macro_export]
 macro_rules! eprintln {
     ($($arg:tt)*) => {

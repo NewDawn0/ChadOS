@@ -33,10 +33,14 @@
 //!
 //! This file contains the module that includes the various allocator backend implementations.
 //!
-//! ## Modules
-//!
-//! - [`bump`](crate::mem::alloc::backend::bump): The Bump Allocator backend module.
-//! - [`galloc`](crate::mem::alloc::backend::galloc): The Good Memory Allocator backend module.
+
+#[cfg(feature = "alloc-bump")]
+/// ## Modules
+/// - [`bump`]: The Bump Allocator backend module.
+
+#[cfg(feature = "alloc-galloc")]
+/// ## Modules
+/// - [`galloc`]: The Good Memory Allocator backend module.
 
 // Modules
 #[cfg(feature = "alloc-bump")]
