@@ -11,7 +11,8 @@ Welcome to ChadOS, an experimental operating system created as part of an
 A-level thesis project. This operating system was developed to explore the
 complexities and challenges involved in creating a custom OS. If you're
 interested in learning more about the thesis behind ChadOS, you can find it in
-the ChadOS/doc/thesis.pdf file.
+the `doc/thesis.pdf` file. You can also access the Rust documentation by running
+`cargo doc --open`.
 
 <!-- vim-markdown-toc GFM -->
 
