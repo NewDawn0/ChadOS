@@ -1,3 +1,38 @@
+//     ____ _               _  ___  ____
+//    / ___| |__   __ _  __| |/ _ \/ ___|
+//   | |   | '_ \ / _` |/ _` | | | \___ \
+//   | |___| | | | (_| | (_| | |_| |___) |
+//    \____|_| |_|\__,_|\__,_|\___/|____/
+//    https://github.com/NewDawn0/ChadOS
+//
+//   @Author: NewDawn0
+//   @Contributors: -
+//   @License: MIT
+//
+//   File: src/mem/paging.rs
+//   Desc: Paging implementation
+
+// RustDoc
+//! # ChadOS Paging Implementation
+//!
+//! This module provides the paging implementation for ChadOS. It includes functions and structures
+//! related to memory paging, enabling the OS to manage memory efficiently. Paging is essential for
+//! virtual memory management and is a fundamental part of an operating system.
+//!
+//! For more information about ChadOS, visit [the ChadOS GitHub repository](https://github.com/NewDawn0/ChadOS).
+//!
+//! ## Author
+//!
+//! - [NewDawn0](https://github.com/NewDawn0)
+//!
+//! ## License
+//!
+//! This code is licensed under the MIT License. See the MIT License section below for details.
+//!
+//! # File: src/mem/paging.rs
+//!
+//! This file contains the paging implementation for ChadOS, which is essential for virtual memory management.
+
 // Imports
 use bootloader::bootinfo::{BootInfo, MemoryMap, MemoryRegionType};
 use x86_64::{

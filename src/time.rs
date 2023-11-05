@@ -1,4 +1,40 @@
-// Rust implementation from: http://www.osdever.net/tutorials/view/brans-kernel-development-tutorial
+//     ____ _               _  ___  ____
+//    / ___| |__   __ _  __| |/ _ \/ ___|
+//   | |   | '_ \ / _` |/ _` | | | \___ \
+//   | |___| | | | (_| | (_| | |_| |___) |
+//    \____|_| |_|\__,_|\__,_|\___/|____/
+//    https://github.com/NewDawn0/ChadOS
+//
+//   @Author: NewDawn0
+//   @Contributors: -
+//   @License: MIT
+//
+//   File: src/time.rs
+//   Desc: Uptime & sleep implementations
+
+// RustDoc
+//! # ChadOS Time Module
+//!
+//! This module provides time-related functionality for ChadOS, an operating system implemented in Rust.
+//! It includes uptime tracking, a timer handler, sleep function, and related utility functions.
+//!
+//! For more information about ChadOS, visit [the ChadOS GitHub repository](https://github.com/NewDawn0/ChadOS).
+//!
+//! ## Author
+//!
+//! - [NewDawn0](https://github.com/NewDawn0)
+//!
+//! ## License
+//!
+//! This code is licensed under the MIT License. See the MIT License section below for details.
+//!
+//! # File: src/time.rs
+//!
+//! This file contains the implementation of uptime tracking, a timer handler, a sleep function, and related utilities.
+
+// @NOTE:Rust implementation from: http://www.osdever.net/tutorials/view/brans-kernel-development-tutorial
+
+// Imports
 #[cfg(test)]
 use crate::test;
 use crate::{
@@ -9,9 +45,11 @@ use alloc::{format, string::String};
 use core::sync::atomic::{AtomicUsize, Ordering};
 use x86_64::instructions::{interrupts, port::PortWriteOnly};
 
+// Globals
 static UPTIME_TICKS: AtomicUsize = AtomicUsize::new(0);
 static UPTIME_SECS: AtomicUsize = AtomicUsize::new(0);
 
+/// Handles timer interrupts and increments the uptime counters.
 fn timer_handler() {
     UPTIME_TICKS.fetch_add(1, Ordering::Relaxed);
     if UPTIME_TICKS.load(Ordering::Relaxed) % PIT_HZ as usize == 0 {
@@ -19,6 +57,7 @@ fn timer_handler() {
     }
 }
 
+/// Initializes the timer and sets the timer interrupt handler.
 pub fn init() {
     let div = 1193180 / PIT_HZ;
     let mut cmd_port: PortWriteOnly<u8> = PortWriteOnly::new(PIT_CMD_PORT);
@@ -31,14 +70,21 @@ pub fn init() {
     set_irq_handler(0, timer_handler)
 }
 
+/// Represents uptime information.
 pub struct Uptime;
+
 impl Uptime {
+    /// Returns the uptime in seconds.
     pub fn secs() -> usize {
         UPTIME_SECS.load(Ordering::Relaxed)
     }
+
+    /// Returns the uptime in timer ticks.
     pub fn ticks() -> usize {
         UPTIME_TICKS.load(Ordering::Relaxed)
     }
+
+    /// Formats the uptime into a readable representation.
     pub fn fmt() -> UptimeRepr {
         let secs = UPTIME_SECS.load(Ordering::Relaxed);
         let years = secs / (365 * 24 * 60 * 60);
@@ -60,6 +106,8 @@ impl Uptime {
             years,
         }
     }
+
+    /// Formats the uptime as a string.
     pub fn string_fmt() -> String {
         let uptime = Self::fmt();
         let mut fmt = String::new();
@@ -92,6 +140,7 @@ impl Uptime {
     }
 }
 
+/// Represents the components of uptime.
 #[derive(Debug)]
 pub struct UptimeRepr {
     pub secs: usize,
@@ -101,12 +150,19 @@ pub struct UptimeRepr {
     pub years: usize,
 }
 
+/// Sleeps for the specified number of seconds.
+///
+/// # Parameters
+///
+/// - `secs`: The number of seconds to sleep.
 pub fn sleep(secs: usize) {
     let start = UPTIME_TICKS.load(Ordering::Relaxed);
     while ((UPTIME_TICKS.load(Ordering::Relaxed) - start) / PIT_HZ as usize) < secs {
         hlt();
     }
 }
+
+/// Makes the CPU wait until the next timer interrupt (HLT instruction).
 fn hlt() {
     let disabled = !interrupts::are_enabled();
     interrupts::enable_and_hlt();
@@ -115,6 +171,7 @@ fn hlt() {
     }
 }
 
+// Tests
 #[test_case]
 fn tets_timer_handler() {
     UPTIME_TICKS.store(0, Ordering::Relaxed);

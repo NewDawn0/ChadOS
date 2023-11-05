@@ -1,3 +1,49 @@
+//     ____ _               _  ___  ____
+//    / ___| |__   __ _  __| |/ _ \/ ___|
+//   | |   | '_ \ / _` |/ _` | | | \___ \
+//   | |___| | | | (_| | (_| | |_| |___) |
+//    \____|_| |_|\__,_|\__,_|\___/|____/
+//    https://github.com/NewDawn0/ChadOS
+//
+//   @Author: NewDawn0
+//   @Contributors: -
+//   @License: MIT
+//
+//   File: src/console.rs
+//   Desc: CheapShell implemenation
+
+// RustDoc
+//! # ChadOS Console
+//!
+//! This module provides the implementation of ChadOS's console and shell, including custom command handling and I/O.
+//!
+//! For more information about ChadOS, visit [the ChadOS GitHub repository](https://github.com/NewDawn0/ChadOS).
+//!
+//! ## Author
+//!
+//! - [NewDawn0](https://github.com/NewDawn0)
+//!
+//! ## License
+//!
+//! This code is licensed under the MIT License.
+//!
+//! # File: src/console.rs
+//!
+//! This file contains the implementation of ChadOS's custom console and shell, including command handling and I/O.
+//!
+//! ## Usage
+//!
+//! To use the ChadOS console and shell (CheapShell), call the `init` function to set up the console and start accepting user input.
+//!
+//! ```rust
+//! use chados::console::init;
+//!
+//! fn main() {
+//!     init();
+//! }
+//! ```
+
+// Imports
 use crate::{
     api::scripting::{CmdArgs, CmdRes},
     cfg::console::{CMD_ERR_COL, CMD_OK_COL, CMD_OUT_COL, CMD_SEPERATOR},
@@ -12,15 +58,22 @@ use hashbrown::HashMap;
 use lazy_static::lazy_static;
 use spin::RwLock;
 
-static OK_CMD: AtomicBool = AtomicBool::new(true);
-// Type
+// Types
 pub type CmdFn = fn(CmdArgs) -> CmdRes;
+
+// Globals
+static OK_CMD: AtomicBool = AtomicBool::new(true);
 lazy_static! {
+    /// A read-write lock containing a map of command names to their corresponding functions.
     pub static ref FUNCS: RwLock<HashMap<&'static str, CmdFn>> = RwLock::new(HashMap::new());
+
+    /// A read-write lock containing the current command line.
     pub static ref CMD_LINE: RwLock<String> = RwLock::new(String::new());
 }
 
-// Init
+/// Initializes the ChadOS console and shell.
+///
+/// This function sets up the console and starts accepting user input. It also initializes user-defined functions.
 pub fn init() {
     // Hijack KEY_HANDLER with custom key_handler
     kprintln!("[CONSOLE] Setting handler");

@@ -1,3 +1,38 @@
+//     ____ _               _  ___  ____
+//    / ___| |__   __ _  __| |/ _ \/ ___|
+//   | |   | '_ \ / _` |/ _` | | | \___ \
+//   | |___| | | | (_| | (_| | |_| |___) |
+//    \____|_| |_|\__,_|\__,_|\___/|____/
+//    https://github.com/NewDawn0/ChadOS
+//
+//   @Author: NewDawn0
+//   @Contributors: -
+//   @License: MIT
+//
+//   File: src/keys.rs
+//   Desc: Keyboard implemenation
+
+// RustDoc
+//! # ChadOS Keyboard Handling
+//!
+//! This module provides keyboard handling functionality for ChadOS, including the definition of keyboard layouts,
+//! handling key events, and setting up the keyboard interrupt handler.
+//!
+//! For more information about ChadOS, visit [the ChadOS GitHub repository](https://github.com/NewDawn0/ChadOS).
+//!
+//! ## Author
+//!
+//! - [NewDawn0](https://github.com/NewDawn0)
+//!
+//! ## License
+//!
+//! This code is licensed under the MIT License.
+//!
+//! # File: src/keys.rs
+//!
+//! This file contains the implementation of keyboard handling for ChadOS.
+
+// Imports
 #[cfg(test)]
 use crate::test;
 use crate::{
@@ -14,13 +49,22 @@ use pc_keyboard::{
 use spin::{Mutex, RwLock};
 use x86_64::instructions::port::Port;
 
-static KEYBOARD: Mutex<Layout> = Mutex::new(Layout::new(LAYOUT));
-
+// Macros
 macro_rules! layout {
     ($layout:ident) => {
         Keyboard::new(ScancodeSet1::new(), layouts::$layout, MapLettersToUnicode)
     };
 }
+
+// Globals
+static KEYBOARD: Mutex<Layout> = Mutex::new(Layout::new(LAYOUT));
+lazy_static! {
+    /// A read-write lock containing the key handler function.
+    pub static ref KEY_HANDLER: RwLock<fn(c: char, mods: Modifiers)> =
+        RwLock::new(default_key_handler);
+}
+
+/// Enumeration of wrapped keyboard layouts.
 #[derive(Copy, Clone)]
 pub enum WrappedLayout {
     Us,
@@ -33,6 +77,7 @@ pub enum WrappedLayout {
     Dvp,
 }
 
+/// Enum representing keyboard layouts.
 pub enum Layout {
     Us(Keyboard<layouts::Us104Key, ScancodeSet1>),
     Uk(Keyboard<layouts::Uk105Key, ScancodeSet1>),
@@ -45,6 +90,7 @@ pub enum Layout {
 }
 
 impl Layout {
+    /// Creates a new instance of the `Layout` enum based on the specified `WrappedLayout`.
     pub const fn new(layout: WrappedLayout) -> Self {
         match layout {
             WrappedLayout::Us => Layout::Us(layout!(Us104Key)),
@@ -57,6 +103,8 @@ impl Layout {
             WrappedLayout::Dvp => Layout::Dvp(layout!(DVP104Key)),
         }
     }
+
+    /// Adds a byte to the layout and returns a `KeyEvent` if one is available.
     fn add_byte(&mut self, code: u8) -> Result<Option<KeyEvent>, Error> {
         match self {
             Layout::Us(inner) => inner.add_byte(code),
@@ -70,6 +118,7 @@ impl Layout {
         }
     }
 
+    /// Processes a `KeyEvent` and returns a `DecodedKey`.
     fn process_keyevent(&mut self, event: KeyEvent) -> Option<DecodedKey> {
         match self {
             Layout::Us(inner) => inner.process_keyevent(event),
@@ -84,13 +133,17 @@ impl Layout {
     }
 }
 
+/// Initializes the keyboard handling for ChadOS.
 pub fn init() {
     set_irq_handler(1, key_handler)
 }
+
+/// Reads a scancode from the keyboard port.
 fn read_scancode() -> u8 {
     unsafe { Port::new(KEYBOARD_PORT).read() }
 }
 
+/// Modifiers for keyboard input.
 #[repr(packed)]
 pub struct Modifiers {
     // Standard
@@ -105,6 +158,7 @@ pub struct Modifiers {
     pub caps: bool,  // byte 8
 }
 impl Modifiers {
+    /// Creates a new instance of `Modifiers` with default values.
     pub const fn new() -> Self {
         Self {
             // Standard
@@ -121,6 +175,7 @@ impl Modifiers {
     }
 }
 
+/// Default key handler function that prints characters to the console.
 fn default_key_handler(c: char, mods: Modifiers) {
     if mods.clear {
         clear_char();
@@ -130,11 +185,8 @@ fn default_key_handler(c: char, mods: Modifiers) {
         print!("{}", c)
     }
 }
-lazy_static! {
-    pub static ref KEY_HANDLER: RwLock<fn(c: char, mods: Modifiers)> =
-        RwLock::new(default_key_handler);
-}
 
+/// Keyboard interrupt handler function.
 fn key_handler() {
     let mut keyboard = KEYBOARD.lock();
     let code = read_scancode();
@@ -175,6 +227,7 @@ fn key_handler() {
     }
 }
 
+// Tests
 #[test_case]
 fn test_layout_creation() {
     let layouts = [
@@ -195,6 +248,7 @@ fn test_layout_creation() {
 #[test_case]
 fn test_key_handler() {
     use core::mem::ManuallyDrop;
+    use pc_keyboard::KeyState as KS;
     let mut layout = ManuallyDrop::new(Layout::Us(layout!(Us104Key)));
     let event = KeyEvent {
         state: KS::Down,

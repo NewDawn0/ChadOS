@@ -1,3 +1,40 @@
+//     ____ _               _  ___  ____
+//    / ___| |__   __ _  __| |/ _ \/ ___|
+//   | |   | '_ \ / _` |/ _` | | | \___ \
+//   | |___| | | | (_| | (_| | |_| |___) |
+//    \____|_| |_|\__,_|\__,_|\___/|____/
+//    https://github.com/NewDawn0/ChadOS
+//
+//   @Author: NewDawn0
+//   @Contributors: -
+//   @License: MIT
+//
+//   File: src/mem/alloc/init.rs
+//   Desc: Initalizes the allocator
+
+// RustDoc
+//! # Allocator Initialization
+//!
+//! This module contains functions and structures related to initializing the memory allocator
+//! for ChadOS. The allocator can be configured to use either the Bump Allocator or the Good Memory
+//! Allocator based on feature flags.
+//!
+//! For more information about ChadOS, visit [the ChadOS GitHub repository](https://github.com/NewDawn0/ChadOS).
+//!
+//! ## Author
+//!
+//! - [NewDawn0](https://github.com/NewDawn0)
+//!
+//! ## License
+//!
+//! This code is licensed under the MIT License. See the MIT License section below for details.
+//!
+//! # File: src/mem/alloc/init.rs
+//!
+//! This file contains functions and structures for initializing the memory allocator based on
+//! feature flags.
+
+// Imports
 use crate::cfg::mem::{HEAP_SIZE, HEAP_START};
 #[cfg(test)]
 use crate::test;
@@ -11,6 +48,7 @@ use x86_64::{
     VirtAddr,
 };
 
+// Set allocator
 #[cfg(feature = "alloc-bump")]
 use crate::mem::alloc::backend::bump::bump::ALLOC;
 #[cfg(feature = "alloc-galloc")]
@@ -37,6 +75,20 @@ pub fn align_up(addr: usize, align: usize) -> usize {
     (addr + align - 1) & !(align - 1)
 }
 
+/// Initializes the memory allocator.
+///
+/// This function sets up the memory allocator's heap, maps the heap pages, and initializes
+/// the selected allocator (Bump Allocator or Good Memory Allocator) based on the feature flags.
+///
+/// # Arguments
+///
+/// - `mapper`: A mutable reference to the memory mapper for mapping heap pages.
+/// - `frame_alloc`: A mutable reference to the frame allocator for allocating physical frames.
+///
+/// # Returns
+///
+/// Returns `Ok(())` if the initialization is successful, or an error of type `MapToError` if there's an issue
+/// mapping the heap pages.
 pub fn init(
     mapper: &mut impl Mapper<Size4KiB>,
     frame_alloc: &mut impl FrameAlloc<Size4KiB>,
@@ -61,6 +113,7 @@ pub fn init(
     Ok(())
 }
 
+// Tests
 #[test_case]
 fn test_alloc() {
     use alloc::{boxed::Box, rc::Rc, vec::Vec};

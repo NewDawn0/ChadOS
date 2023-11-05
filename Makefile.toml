@@ -1,3 +1,17 @@
+#     ____ _               _  ___  ____
+#    / ___| |__   __ _  __| |/ _ \/ ___|
+#   | |   | '_ \ / _` |/ _` | | | \___ \
+#   | |___| | | | (_| | (_| | |_| |___) |
+#    \____|_| |_|\__,_|\__,_|\___/|____/
+#    https://github.com/NewDawn0/ChadOS
+# 
+#   @Author: NewDawn0
+#   @Contributors: -
+#   @License: MIT
+#   
+#   File: Makefile.toml
+#   Desc: Makefile / Build instructions
+
 env_files = ["./build-cfg/make.env"]
 
 [tasks.default]
