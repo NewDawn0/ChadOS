@@ -1,8 +1,4 @@
-use crate::{
-    cfg::interrupt::*,
-    interrupt::{handler, pic::InterruptIndex},
-    wprintln,
-};
+use crate::{cfg::interrupt::*, interrupt::handler, wprintln};
 use lazy_static::lazy_static;
 use spin::RwLock;
 use x86_64::structures::idt::InterruptDescriptorTable;

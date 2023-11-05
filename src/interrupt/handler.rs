@@ -3,9 +3,9 @@ use crate::{
     eprintln,
     interrupt::{
         idt::{irq_index, IRQ_HANDLERS},
-        pic::{InterruptIndex, PICS},
+        pic::PICS,
     },
-    print, util,
+    util,
 };
 use x86_64::{
     instructions::{interrupts, port::Port},
@@ -20,12 +20,6 @@ pub extern "x86-interrupt" fn double_fault(stack_frame: StackFrame, error_code: 
         "EXCEPTION: DOUBLE FAULT\n-> Error Code {:?}\nStack Frame-> {:#?}",
         error_code, stack_frame
     );
-}
-pub extern "x86-interrupt" fn timer_interrupt(_stack_frame: StackFrame) {
-    print!(".");
-    unsafe {
-        PICS.notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
-    }
 }
 pub extern "x86-interrupt" fn stack_segment_fault(stack_frame: StackFrame, error_code: u64) {
     panic!(

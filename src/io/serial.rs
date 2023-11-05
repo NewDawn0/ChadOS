@@ -33,6 +33,7 @@ macro_rules! serial_print {
     ($($arg:tt)*) => ($crate::io::serial::_print(format_args!($($arg)*)));
 }
 
+#[allow(unused)]
 pub(crate) mod prelude {
     pub use crate::{serial_print, serial_println};
 }
