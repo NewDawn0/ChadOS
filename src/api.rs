@@ -41,17 +41,14 @@ pub mod alloc {
     //! Re-exports for memory allocations
     //!
     //! This module re-exports various items related to memory allocation.
-    pub use alloc::{
-        alloc::{alloc, dealloc, realloc},
-        rc, vec,
-    };
+    pub use alloc::alloc;
 }
 
 pub mod io {
     //! I/O functions for usr_bin
     //!
     //! This module provides I/O functions for usr_bin. Note that `kprintln` is privileged and is not exposed here.
-    pub use crate::io::vga::prelude;
+    pub use crate::io::vga::prelude::{Colour, COL};
     pub use crate::{eprintln, print, println, rprint, wprintln};
 }
 
